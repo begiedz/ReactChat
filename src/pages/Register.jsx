@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import Add from '../img/addAvatar.png';
-import { auth, storage } from '../firebase';
+import { auth, storage, db } from '../firebase';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
-
+import { doc, setDoc } from 'firebase/firestore';
 const Register = () => {
     const [err, setErr] = useState(false);
     const handleSubmit = async (e) => {
@@ -23,6 +23,14 @@ const Register = () => {
                             displayName,
                             photoURL: downloadURL,
                         });
+                        await setDoc(doc(db, 'users', res.user.uid), {
+                            uid: res.user.uid,
+                            displayName, // displayName:displayName
+                            email,
+                            photoURL: downloadURL,
+                        });
+
+                        await setDoc(doc(db, 'userChats', res.user.uid), {});
                     } catch (err) {
                         console.log(err);
                         setErr(true);
