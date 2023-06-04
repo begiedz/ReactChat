@@ -4,6 +4,7 @@ import { auth, storage, db } from '../firebase';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import { doc, setDoc } from 'firebase/firestore';
+import { Link } from 'react-router-dom';
 const Register = () => {
     const [err, setErr] = useState(false);
     const handleSubmit = async (e) => {
@@ -59,7 +60,9 @@ const Register = () => {
                     <button>Sign up</button>
                     {err && <span>Something went wrong</span>}
                 </form>
-                <p>You have an account? Login</p>
+                <p>
+                    You have an account? <Link to="/login">Login</Link>
+                </p>
             </div>
         </div>
     );
