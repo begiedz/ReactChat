@@ -1,28 +1,45 @@
-import React from 'react'
-import Add from '../img/addAvatar.png'
+import React, { useState } from 'react';
+import Add from '../img/addAvatar.png';
+import { auth } from '../firebase';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 
 const Register = () => {
-  return (
-    <div className="formContainer">
+    const [err, setSerr] = useState(false);
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const displayName = e.target[0].value;
+        const email = e.target[1].value;
+        const password = e.target[2].value;
+        const file = e.target[3].files[0];
+
+        try {
+            const res = await createUserWithEmailAndPassword(auth, email, password);
+            console.log(res);
+        } catch (err) {
+            setSerr(true);
+        }
+    };
+    return (
+        <div className="formContainer">
             <div className="formWrapper">
-                    <span className="logo">React Chat</span>
-                    <span className="title">Register</span>
-                <form >
-                    <input type="text" placeholder='display name' />
-                    <input type="email" placeholder='email' />
-                    <input type="password" placeholder='password' />
-                    <input type="file" id="file" style={{display:'none'}}/>
+                <span className="logo">React Chat</span>
+                <span className="title">Register</span>
+                <form onSubmit={handleSubmit}>
+                    <input type="text" placeholder="display name" />
+                    <input type="email" placeholder="email" />
+                    <input type="password" placeholder="password" />
+                    <input type="file" id="file" style={{ display: 'none' }} />
                     <label htmlFor="file">
-                        <img src={Add} alt=""/>
+                        <img src={Add} alt="" />
                         <span>Add an avatar</span>
                     </label>
                     <button>Sign up</button>
+                    {err && <span>Something went wrong</span>}
                 </form>
-                    <p>You have an account? Login</p>
-                    
+                <p>You have an account? Login</p>
             </div>
         </div>
-  )
-}
+    );
+};
 
-export default Register
+export default Register;
