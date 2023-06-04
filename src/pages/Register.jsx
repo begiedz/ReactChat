@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import Add from '../img/addAvatar.png';
-import { auth } from '../firebase';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth, storage } from '../firebase';
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 
 const Register = () => {
-    const [err, setSerr] = useState(false);
+    const [err, setErr] = useState(false);
     const handleSubmit = async (e) => {
         e.preventDefault();
         const displayName = e.target[0].value;
@@ -14,9 +15,23 @@ const Register = () => {
 
         try {
             const res = await createUserWithEmailAndPassword(auth, email, password);
+            const storageRef = ref(storage, displayName);
+            await uploadBytesResumable(storageRef, file).then(() => {
+                getDownloadURL(storageRef).then(async (downloadURL) => {
+                    try {
+                        await updateProfile(res.user, {
+                            displayName,
+                            photoURL: downloadURL,
+                        });
+                    } catch (err) {
+                        console.log(err);
+                        setErr(true);
+                    }
+                });
+            });
             console.log(res);
         } catch (err) {
-            setSerr(true);
+            setErr(true);
         }
     };
     return (
